@@ -42,16 +42,6 @@ function doPost(e) {
     visibility: CalendarApp.Visibility.PRIVATE,
   });
 
-  // Log to Google Sheet
-  const spreadSheetId = PropertiesService.getScriptProperties().getProperty("SPREAD_SHEET_ID");
-  const spreadsheet = SpreadsheetApp.openById(spreadSheetId);
-  let sheet = spreadsheet.getSheetByName("Form Responses 1");
-  if (!sheet) {
-    sheet = spreadsheet.insertSheet("Form Responses 1");
-    sheet.appendRow(["Timestamp", "Name", "Email", "Address", "Apartment Number", "Start Date", "End Date"]);
-  }   
-  sheet.appendRow([new Date(), name, email, address, apartmentNumber, startDate, endDate]);
-
   // Send confirmation
   const confirmationMessage =
     `Hello ${name},\n\n` +
