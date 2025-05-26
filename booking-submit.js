@@ -12,6 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const end = new Date(formData.get("endDate"));
       const now = new Date();
   
+      // Reject invalid bookings
+      const honeypot = formData.get("website");
+      if (honeypot) {
+        messageBox.textContent = "❌ Submission blocked.";
+        messageBox.className = "error";
+        return;
+      }
+
       // Rule 1: Start date cannot be in the past
       if (start < now) {
         messageBox.textContent = "❌ The start date cannot be in the past.";

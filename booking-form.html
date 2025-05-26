@@ -11,6 +11,12 @@
     #message { margin-top: 2em; font-weight: bold; }
     .success { color: green; }
     .error { color: red; }
+    .honeypot {
+      position: absolute;
+      left: -9999px;
+      height: 0;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -44,6 +50,11 @@
     <label>
       End Date:
       <input type="datetime-local" name="endDate" id="endDate" required>
+    </label>
+
+    <label class="honeypot">
+      Leave blank:
+      <input type="text" name="website">
     </label>
 
     <button type="submit">Submit Booking</button>
