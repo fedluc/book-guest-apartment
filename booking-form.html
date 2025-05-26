@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guest Apartment Booking</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 1em; }
+    input, textarea, button { width: 100%; padding: 0.5em; margin-top: 0.3em; }
+    #message { margin-top: 2em; font-weight: bold; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Book the Guest Apartment</h1>
+  <form id="booking-form">
+    <label>
+      Name:
+      <input type="text" name="name" required>
+    </label>
+
+    <label>
+      Email:
+      <input type="email" name="email" required>
+    </label>
+
+    <label>
+      Address:
+      <input type="text" name="address" required>
+    </label>
+
+    <label>
+      Apartment Number:
+      <input type="text" name="apartmentNumber" required>
+    </label>
+
+    <label>
+      Start Date:
+      <input type="datetime-local" name="startDate" id="startDate" required>
+    </label>
+    
+    <label>
+      End Date:
+      <input type="datetime-local" name="endDate" id="endDate" required>
+    </label>
+
+    <button type="submit">Submit Booking</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const startInput = document.getElementById("startDate");
+    const endInput = document.getElementById("endDate");
+
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 16); // format: yyyy-MM-ddTHH:mm
+    startInput.min = todayStr;
+
+    const threeMonthsLater = new Date(now);
+    threeMonthsLater.setMonth(now.getMonth() + 3);
+    startInput.max = threeMonthsLater.toISOString().slice(0, 16);
+
+    // When start date changes:
+    startInput.addEventListener("change", () => {
+      const startDate = new Date(startInput.value);
+      const maxEnd = new Date(startDate.getTime() + 2 * 24 * 60 * 60 * 1000);
+      endInput.min = startDate.toISOString().slice(0, 16);
+      endInput.max = maxEnd.toISOString().slice(0, 16);
+    });
+  </script>
+
+  <script src="env.js"></script>  
+  <script>
+    const form = document.getElementById("booking-form");
+    const messageBox = document.getElementById("message");
+  
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      messageBox.textContent = "";
+      messageBox.className = "";
+  
+      const formData = new FormData(form);
+      const now = new Date();
+      const name = formData.get("name");
+      const email = formData.get("email");
+      const address = formData.get("address");
+      const apartmentNumber = formData.get("apartmentNumber");
+      const start = new Date(formData.get("startDate"));
+      const end = new Date(formData.get("endDate"));
+  
+      // Proceed with submission via fetch()
+      const body = new URLSearchParams(formData);
+  
+      try {
+        const scriptUrl = window.ENV.SCRIPT_URL;
+        const response = await fetch(scriptUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body
+        });
+  
+        const text = await response.text();
+  
+        if (response.ok && text.includes("Booking confirmed")) {
+          messageBox.textContent = "✅ Booking successfully submitted!";
+          messageBox.className = "success";
+          form.reset();
+        } else {
+          messageBox.textContent = "❌ Error from server: " + text;
+          messageBox.className = "error";
+        }
+      } catch (err) {
+        messageBox.textContent = "❌ Network error: " + err.message;
+        messageBox.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>
