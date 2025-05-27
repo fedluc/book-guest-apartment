@@ -1,6 +1,18 @@
 function doPost(e) {
   const params = e.parameter;
 
+  // Check that bookings rate limit is not exceeded
+  const RATE_LIMIT_MINUTES = 5; // Rate limit in minutes
+  const rateLimit = isRateLimited(e, RATE_LIMIT_MINUTES);
+  if (rateLimit.limited) {
+    return ContentService.createTextOutput(
+      `You're sending requests too quickly. Please wait ${rateLimit.retryAfter} more minute(s).`
+    );
+  }
+
+  // Log submission
+  logSubmission(e);
+
   // Extract inputs from custom form
   const name = params.name;
   const email = params.email;
