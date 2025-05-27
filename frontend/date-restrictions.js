@@ -1,19 +1,28 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const startInput = document.getElementById("startDate");
-    const endInput = document.getElementById("endDate");
-  
-    const now = new Date();
-    const todayStr = now.toISOString().slice(0, 16);
-    startInput.min = todayStr;
-  
-    const threeMonthsLater = new Date(now);
-    threeMonthsLater.setMonth(now.getMonth() + 3);
-    startInput.max = threeMonthsLater.toISOString().slice(0, 16);
-  
-    startInput.addEventListener("change", () => {
-      const startDate = new Date(startInput.value);
-      const maxEnd = new Date(startDate.getTime() + 2 * 24 * 60 * 60 * 1000);
-      endInput.min = startDate.toISOString().slice(0, 16);
-      endInput.max = maxEnd.toISOString().slice(0, 16);
-    });
-  });
+const startInput = document.getElementById('startDate');
+const endInput = document.getElementById('endDate');
+const today = new Date();
+const todayStr = today.toISOString().split('T')[0];
+startInput.min = todayStr;
+const maxStart = new Date(today);
+maxStart.setMonth(maxStart.getMonth() + 3);
+const maxStartStr = maxStart.toISOString().split('T')[0];
+startInput.max = maxStartStr;
+startInput.addEventListener('change', () => {
+  const selectedStart = new Date(startInput.value);
+  if (startInput.value) {
+    endInput.disabled = false;
+    const minEnd = new Date(selectedStart);
+    const minEndStr = minEnd.toISOString().split('T')[0];
+    endInput.min = minEndStr;
+    const maxEnd = new Date(selectedStart);
+    maxEnd.setDate(maxEnd.getDate() + 2);
+    const maxEndStr = maxEnd.toISOString().split('T')[0];
+    endInput.max = maxEndStr;
+    if (!endInput.value || endInput.value < minEndStr || endInput.value > maxEndStr) {
+      endInput.value = minEndStr;
+    }
+  } else {
+    endInput.disabled = true;
+    endInput.value = '';
+  }
+});

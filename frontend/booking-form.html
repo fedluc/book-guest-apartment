@@ -27,32 +27,26 @@
       Name:
       <input type="text" name="name" required>
     </label>
-
     <label>
       Email:
       <input type="email" name="email" required>
     </label>
-
     <label>
       Address:
       <input type="text" name="address" required>
     </label>
-
     <label>
       Apartment Number:
       <input type="text" name="apartmentNumber" required>
     </label>
-
     <label>
       Start Date:
-      <input type="datetime-local" name="startDate" id="startDate" required>
+      <input type="date" name="startDate" id="startDate" required>
     </label>
-    
     <label>
       End Date:
-      <input type="datetime-local" name="endDate" id="endDate" required>
+      <input type="date" name="endDate" id="endDate" required disabled>
     </label>
-
     <label class="honeypot">
       Leave blank:
       <input type="text" name="website">
@@ -60,9 +54,7 @@
     <div id="recaptcha-container"></div>
     <button type="submit">Submit Booking</button>
   </form>
-
   <div id="message"></div>
-
   <script src="env.js"></script>
   <script src="verify-recaptcha.js"></script>
   <script src="date-restrictions.js"></script>
