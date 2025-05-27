@@ -2,13 +2,13 @@ function doPost(e) {
   const params = e.parameter;
 
   // Check that bookings rate limit is not exceeded
-  const RATE_LIMIT_MINUTES = 5; // Rate limit in minutes
-  const rateLimit = checkRateLimit(e, RATE_LIMIT_MINUTES);
+  const rateLimit = checkRateLimit(e);
   if (rateLimit.limited) {
-    return ContentService.createTextOutput(
-      `You're sending requests too quickly. Please wait ${rateLimit.retryAfter} more minute(s).`
-    );
-  }
+    const msg = rateLimit.reason === "blocked"
+      ? `You are temporarily blocked. Try again in ${rateLimit.retryAfter} minute(s).`
+      : `Too many requests. You are now blocked for ${rateLimit.retryAfter} minutes.`;
+    return ContentService.createTextOutput(msg);
+  } 
 
   // Log submission
   logSubmission(e);
