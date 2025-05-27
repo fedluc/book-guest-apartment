@@ -3,7 +3,7 @@ function doPost(e) {
 
   // Check that bookings rate limit is not exceeded
   const RATE_LIMIT_MINUTES = 5; // Rate limit in minutes
-  const rateLimit = isRateLimited(e, RATE_LIMIT_MINUTES);
+  const rateLimit = checkRateLimit(e, RATE_LIMIT_MINUTES);
   if (rateLimit.limited) {
     return ContentService.createTextOutput(
       `You're sending requests too quickly. Please wait ${rateLimit.retryAfter} more minute(s).`

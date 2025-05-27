@@ -1,4 +1,4 @@
-function isRateLimited(e, limitMinutes) {
+function checkRateLimit(e, limitMinutes) {
   const ip = e.headers["X-Forwarded-For"] || "unknown";
   const sheetId = PropertiesService.getScriptProperties().getProperty("BOOKING_LOG_SHEET_ID");
   const sheet = SpreadsheetApp.openById(sheetId).getSheets()[0];
