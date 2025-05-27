@@ -1,13 +1,10 @@
 function doPost(e) {
   const params = e.parameter;
 
-  // Check that bookings rate limit is not exceeded
-  const rateLimit = checkRateLimit(e);
-  if (rateLimit.limited) {
-    const msg = rateLimit.reason === "blocked"
-      ? `You are temporarily blocked. Try again in ${rateLimit.retryAfter} minute(s).`
-      : `Too many requests. You are now blocked for ${rateLimit.retryAfter} minutes.`;
-    return ContentService.createTextOutput(msg);
+  // Validate recaptcha
+  const recaptchaToken = e.parameter["g-recaptcha-response"];
+  if (!verifyRecaptcha(recaptchaToken)) {
+    return ContentService.createTextOutput("reCAPTCHA verification failed. Please try again.");
   } 
 
   // Log submission

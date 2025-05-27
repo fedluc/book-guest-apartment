@@ -18,6 +18,7 @@
       overflow: hidden;
     }
   </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <h1>Book the Guest Apartment</h1>
@@ -56,13 +57,14 @@
       Leave blank:
       <input type="text" name="website">
     </label>
-
+    <div id="recaptcha-container"></div>
     <button type="submit">Submit Booking</button>
   </form>
 
   <div id="message"></div>
 
   <script src="env.js"></script>
+  <script src="verify-recaptcha.js"></script>
   <script src="date-restrictions.js"></script>
   <script src="booking-submit.js"></script>
 </body>
