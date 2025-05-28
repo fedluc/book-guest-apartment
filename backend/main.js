@@ -29,6 +29,8 @@ function doPost(e) {
   const now = new Date();
 
   // Rule 1: Double bookings are not allowed
+  const threeMonthsFromNow = new Date();
+  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
   const futureEvents = calendar.getEvents(now, threeMonthsFromNow);
   const userIdentifier = `${address.trim().toLowerCase()}|${apartmentNumber.trim().toLowerCase()}`;
   for (let event of futureEvents) {
