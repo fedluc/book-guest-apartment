@@ -4,48 +4,170 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Guest Apartment Booking</title>
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <!-- Flatpickr styles -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+  />
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; }
-    label { display: block; margin-top: 1em; }
-    input, textarea, button { width: 100%; padding: 0.5em; margin-top: 0.3em; }
-    #message { margin-top: 2em; font-weight: bold; }
-    .success { color: green; }
-    .error { color: red; }
+    :root {
+      --primary-color: #2a9d8f;
+      --accent-color: #264653;
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --error-color: #e76f51;
+      --success-color: #2a9d8f;
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 2rem;
+      margin: auto;
+      max-width: 600px;
+    }
+    h1 {
+      text-align: center;
+      color: var(--accent-color);
+    }
+    form {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-top: 1.2em;
+      font-weight: 600;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 0.75em;
+      margin-top: 0.3em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 3px var(--primary-color);
+    }
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-top: 1.5em;
+    }
+    button:hover {
+      background-color: var(--accent-color);
+    }
+    #message {
+      margin-top: 1.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+    .success {
+      color: var(--success-color);
+    }
+    .error {
+      color: var(--error-color);
+    }
     .honeypot {
       position: absolute;
       left: -9999px;
       height: 0;
       overflow: hidden;
     }
-  </style>
+    @media (max-width: 500px) {
+      body {
+        padding: 1rem;
+      }
+      form {
+        padding: 1rem;
+      }
+    }
+    #recaptcha-container {
+      margin-top: 1.5em;
+      margin-bottom: 1.5em;
+    }
+    label span {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    font-weight: 600;
+    margin-bottom: 0.3em;
+    }
+    .input-icon {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .input-icon i {
+      position: absolute;
+      left: 0.75em;
+      color: #888;
+    }
+    .input-icon input {
+      padding-left: 2em;
+    }
+  </style>  
 </head>
 <body>
   <h1>Book the Guest Apartment</h1>
   <form id="booking-form" autocomplete="off">
-    <label>
-      Name:
-      <input type="text" name="name" required>
+    <label for="name">
+      <span><i class="fa fa-user"></i> Name:</span>
     </label>
-    <label>
-      Email:
-      <input type="email" name="email" required>
+    <div class="input-icon">
+      <input type="text" id="name" name="name" required />
+    </div>
+  
+    <label for="email">
+      <span><i class="fa fa-envelope"></i> Email:</span>
     </label>
-    <label>
-      Address:
-      <input type="text" name="address" required>
+    <div class="input-icon">
+      <input type="email" id="email" name="email" required />
+    </div>
+  
+    <label for="address">
+      <span><i class="fa fa-home"></i> Address:</span>
     </label>
-    <label>
-      Apartment Number:
-      <input type="text" name="apartmentNumber" required>
+    <div class="input-icon">
+      <input type="text" id="address" name="address" required />
+    </div>
+  
+    <label for="apartmentNumber">
+      <span><i class="fa fa-building"></i> Apartment Number:</span>
     </label>
-    <label>
-      Start Date:
-      <input type="date" name="startDate" id="startDate" required>
+    <div class="input-icon">
+      <input type="text" id="apartmentNumber" name="apartmentNumber" required />
+    </div>
+  
+    <label for="startDate">
+      <span><i class="fa fa-calendar-alt"></i> Start Date:</span>
     </label>
-    <label>
-      End Date:
-      <input type="date" name="endDate" id="endDate" required disabled>
+    <div class="input-icon">
+      <input type="date" id="startDate" name="startDate" required />
+    </div>
+  
+    <label for="endDate">
+      <span><i class="fa fa-calendar-alt"></i> End Date:</span>
     </label>
+    <div class="input-icon">
+      <input type="date" id="endDate" name="endDate" required disabled />
+    </div>
     <label class="honeypot">
       Leave blank:
       <input type="text" name="website">
