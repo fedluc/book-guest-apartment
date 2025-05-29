@@ -2,3 +2,4 @@ env.js
 .clasp.json
 appsscript.json
 .DS_Store
+.claspignore
