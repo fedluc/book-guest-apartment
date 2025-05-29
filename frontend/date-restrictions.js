@@ -17,11 +17,12 @@ startInput.addEventListener('change', () => {
     endInput.disabled = false;
     // Set minimum end date to today
     const minEnd = new Date(selectedStart);
+    minEnd.setDate(minEnd.getDate() + 1);
     const minEndStr = minEnd.toISOString().split('T')[0];
     endInput.min = minEndStr;
     // Set maximum end date to 2 days after the start date
     const maxEnd = new Date(selectedStart);
-    maxEnd.setDate(maxEnd.getDate() + 2);
+    maxEnd.setDate(maxEnd.getDate() + 3);
     const maxEndStr = maxEnd.toISOString().split('T')[0];
     endInput.max = maxEndStr;
     // Reset the end date if it falls outside the bounding boxes
