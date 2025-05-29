@@ -15,6 +15,7 @@
     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
   />
   <style>
+    /* Define CSS variables for consistent styling */
     :root {
       --primary-color: #2a9d8f;
       --accent-color: #264653;
@@ -24,6 +25,8 @@
       --success-color: #2a9d8f;
       --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
+    /* General body styling */
     body {
       font-family: var(--font);
       background-color: var(--bg-color);
@@ -32,21 +35,29 @@
       margin: auto;
       max-width: 600px;
     }
+
+    /* Center and style the heading */
     h1 {
       text-align: center;
       color: var(--accent-color);
     }
+
+    /* Style the form container */
     form {
       background: white;
       border-radius: 10px;
       padding: 2rem;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+
+    /* Style labels */
     label {
       display: block;
       margin-top: 1.2em;
       font-weight: 600;
     }
+
+    /* Style input fields, textareas, and buttons */
     input, textarea, button {
       width: 100%;
       padding: 0.75em;
@@ -56,11 +67,15 @@
       font-size: 1em;
       box-sizing: border-box;
     }
+
+    /* Focus styles for inputs and textareas */
     input:focus, textarea:focus {
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 3px var(--primary-color);
     }
+
+    /* Style the submit button */
     button {
       background-color: var(--primary-color);
       color: white;
@@ -70,9 +85,13 @@
       transition: background-color 0.2s ease;
       margin-top: 1.5em;
     }
+
+    /* Hover effect for the button */
     button:hover {
       background-color: var(--accent-color);
     }
+
+    /* Style for success and error messages */
     #message {
       margin-top: 1.5em;
       font-weight: bold;
@@ -84,12 +103,16 @@
     .error {
       color: var(--error-color);
     }
+
+    /* Honeypot field for spam prevention */
     .honeypot {
       position: absolute;
       left: -9999px;
       height: 0;
       overflow: hidden;
     }
+
+    /* Responsive styles for smaller screens */
     @media (max-width: 500px) {
       body {
         padding: 1rem;
@@ -98,17 +121,23 @@
         padding: 1rem;
       }
     }
+
+    /* Style for reCAPTCHA container */
     #recaptcha-container {
       margin-top: 1.5em;
       margin-bottom: 1.5em;
     }
+
+    /* Style for labels with icons */
     label span {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    font-weight: 600;
-    margin-bottom: 0.3em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-weight: 600;
+      margin-bottom: 0.3em;
     }
+
+    /* Style for input fields with icons */
     .input-icon {
       display: flex;
       align-items: center;
@@ -127,6 +156,7 @@
 <body>
   <h1>Book the Guest Apartment</h1>
   <form id="booking-form" autocomplete="off">
+    <!-- Name input field -->
     <label for="name">
       <span><i class="fa fa-user"></i> Name:</span>
     </label>
@@ -134,6 +164,7 @@
       <input type="text" id="name" name="name" required />
     </div>
   
+    <!-- Email input field -->
     <label for="email">
       <span><i class="fa fa-envelope"></i> Email:</span>
     </label>
@@ -141,6 +172,7 @@
       <input type="email" id="email" name="email" required />
     </div>
   
+    <!-- Address input field -->
     <label for="address">
       <span><i class="fa fa-home"></i> Address:</span>
     </label>
@@ -148,6 +180,7 @@
       <input type="text" id="address" name="address" required />
     </div>
   
+    <!-- Apartment number input field -->
     <label for="apartmentNumber">
       <span><i class="fa fa-building"></i> Apartment Number:</span>
     </label>
@@ -155,6 +188,7 @@
       <input type="text" id="apartmentNumber" name="apartmentNumber" required />
     </div>
   
+    <!-- Start date input field -->
     <label for="startDate">
       <span><i class="fa fa-calendar-alt"></i> Start Date:</span>
     </label>
@@ -162,20 +196,31 @@
       <input type="date" id="startDate" name="startDate" required />
     </div>
   
+    <!-- End date input field (disabled by default) -->
     <label for="endDate">
       <span><i class="fa fa-calendar-alt"></i> End Date:</span>
     </label>
     <div class="input-icon">
       <input type="date" id="endDate" name="endDate" required disabled />
     </div>
+
+    <!-- Honeypot field for spam prevention -->
     <label class="honeypot">
       Leave blank:
       <input type="text" name="website">
     </label>
+
+    <!-- reCAPTCHA container -->
     <div id="recaptcha-container"></div>
+
+    <!-- Submit button -->
     <button type="submit">Submit Booking</button>
   </form>
+
+  <!-- Message container for success or error messages -->
   <div id="message"></div>
+
+  <!-- External JavaScript files -->
   <script src="env.js"></script>
   <script src="on-recaptcha-load-callback.js"></script>
   <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoadCallback&render=explicit" async defer></script>
