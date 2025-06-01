@@ -3,3 +3,4 @@ env.js
 appsscript.json
 .DS_Store
 .claspignore
+*firebase*
