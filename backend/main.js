@@ -71,3 +71,30 @@ function formatBookingSummary(startDate, endDate, address, apartmentNumber) {
     `🔢 Apartment Number: ${apartmentNumber}\n`
   );
 }
+
+
+function doGet() {
+  const calendarId = PropertiesService.getScriptProperties().getProperty("CALENDAR_ID");
+  const calendar = CalendarApp.getCalendarById(calendarId);
+
+  const today = new Date();
+  const threeMonthsFromNow = new Date();
+  threeMonthsFromNow.setMonth(today.getMonth() + 3);
+
+  const events = calendar.getEvents(today, threeMonthsFromNow);
+  const bookedDates = new Set();
+
+  for (let event of events) {
+    const start = new Date(event.getStartTime());
+    const end = new Date(event.getEndTime());
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      bookedDates.add(`${yyyy}-${mm}-${dd}`);
+    }
+  }
+  return ContentService
+    .createTextOutput(JSON.stringify([...bookedDates]))
+    .setMimeType(ContentService.MimeType.JSON);
+}

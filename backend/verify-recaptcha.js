@@ -9,4 +9,4 @@ function verifyRecaptcha(token) {
     });
     const json = JSON.parse(response.getContentText());
     return json.success === true;
-  }
+}
