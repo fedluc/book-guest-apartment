@@ -9,6 +9,10 @@
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
   />
+  <link 
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" 
+  />
   <style>
     /* Define CSS variables for consistent styling */
     :root {
@@ -146,8 +150,21 @@
     .input-icon input {
       padding-left: 2em;
     }
+    .flatpickr-calendar {
+      left: auto !important;
+      right: auto !important;
+      transform: none !important;
+      margin: 0 auto;
+    }
   </style>
   <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoadCallback&render=explicit" async defer></script>  
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      flatpickr("#startDate", { dateFormat: "Y-m-d" });
+      flatpickr("#endDate", { dateFormat: "Y-m-d" });
+    });
+  </script>
 </head>
 <body>
   <h1>Book the Guest Apartment</h1>
@@ -189,7 +206,7 @@
       <span><i class="fa fa-calendar-alt"></i> Start Date:</span>
     </label>
     <div class="input-icon">
-      <input type="date" id="startDate" name="startDate" required />
+      <input type="text" id="startDate" name="startDate" required />
     </div>
   
     <!-- End date input field (disabled by default) -->
@@ -197,7 +214,7 @@
       <span><i class="fa fa-calendar-alt"></i> End Date:</span>
     </label>
     <div class="input-icon">
-      <input type="date" id="endDate" name="endDate" required disabled />
+      <input type="text" id="endDate" name="endDate" required disabled />
     </div>
 
     <!-- Honeypot field for spam prevention -->
