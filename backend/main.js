@@ -26,11 +26,34 @@ function doPost(e) {
   const calendar = CalendarApp.getCalendarById(calendarId);
 
   const bookingSummary = formatBookingSummary(startDate, endDate, address, apartmentNumber);
-  const now = new Date();
 
-  // Rule 1: Double bookings are not allowed
-  const threeMonthsFromNow = new Date();
-  threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+   // Check the booking rules
+   const now = new Date();
+
+   // Rule 1: The start date cannot be in the past
+   if (startDate < now) {
+     return ContentService.createTextOutput("The start date cannot be in the past.");
+   }
+ 
+   // Rule 2: The start date must be within three months
+   const threeMonthsFromNow = new Date();
+   threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+   if (startDate > threeMonthsFromNow) {
+     return ContentService.createTextOutput("The start date must be within three months from today.");
+   }
+ 
+   // Rule 3: The end date cannot be earlier than the start date
+   if (endDate < startDate) {
+     return ContentService.createTextOutput("The end date cannot be earlier than the start date.");
+   }
+ 
+   // Rule 4: The booking cannot be longer than four days
+   const maxBookingLength = 4 * 24 * 60 * 60 * 1000; // 4 days in milliseconds
+   if (endDate.getTime() - startDate.getTime() > maxBookingLength) {
+     return ContentService.createTextOutput("The booking cannot be longer than 4 days.");
+   }
+
+  // Rule 5: Double bookings are not allowed
   const futureEvents = calendar.getEvents(now, threeMonthsFromNow);
   const userIdentifier = `${address.trim().toLowerCase()}|${apartmentNumber.trim().toLowerCase()}`;
   for (let event of futureEvents) {
@@ -40,7 +63,7 @@ function doPost(e) {
     }
   }
 
-  // Rule 2: The dates must be available
+  // Rule 6: The dates must be available
   const existingEvents = calendar.getEvents(startDate, endDate);
   if (existingEvents.length > 0) {
     return ContentService.createTextOutput("Sorry, the apartment is already booked for the selected dates.");
