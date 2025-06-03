@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   const endInput = document.getElementById("endDate");
 
   const today = new Date();
+  const oneWeekFromToday = new Date();
+  oneWeekFromToday.setDate(today.getDate() + 7);
   const threeMonthsFromToday = new Date();
   threeMonthsFromToday.setMonth(today.getMonth() + 3);
 
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   const startPicker = flatpickr(startInput, {
     dateFormat: "Y-m-d",
-    minDate: today,
+    minDate: oneWeekFromToday,
     maxDate: threeMonthsFromToday,
     disable: disabledDates,
     onChange: function (selectedDates) {
