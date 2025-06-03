@@ -182,6 +182,19 @@
       transform: none !important;
       margin: 0 auto;
     }
+
+    .field-error {
+      color: var(--error-color);
+      font-size: 0.9em;
+      margin-top: 0.25em;
+      display: none;
+    }
+
+    input.invalid, select.invalid {
+      border-color: var(--error-color);
+      box-shadow: 0 0 3px var(--error-color);
+    }
+
   </style>
   <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoadCallback&render=explicit" async defer></script>  
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -196,7 +209,8 @@
     <div class="input-icon">
       <input type="text" id="name" name="name" required />
     </div>
-  
+    <div class="field-error" id="name-error"></div>
+
     <!-- Email input field -->
     <label for="email">
       <span><i class="fa fa-envelope"></i> Email:</span>
@@ -204,7 +218,8 @@
     <div class="input-icon">
       <input type="email" id="email" name="email" required />
     </div>
-  
+    <div class="field-error" id="email-error"></div>
+
     <!-- Address dropdown -->
     <label for="address">
       <span><i class="fa fa-home"></i> Address:</span>
@@ -214,6 +229,7 @@
         <option value="">Select address</option>
       </select>
     </div>
+    <div class="field-error" id="address-error"></div>
 
     <!-- Apartment number dropdown -->
     <label for="apartmentNumber">
@@ -224,7 +240,8 @@
         <option value="">Select apartment</option>
       </select>
     </div>
-  
+    <div class="field-error" id="apartmentNumber-error"></div>
+
     <!-- Start date input field -->
     <label for="startDate">
       <span><i class="fa fa-calendar-alt"></i> Start Date:</span>
@@ -232,7 +249,8 @@
     <div class="input-icon">
       <input type="text" id="startDate" name="startDate" required />
     </div>
-  
+    <div class="field-error" id="startDate-error"></div>
+
     <!-- End date input field (disabled by default) -->
     <label for="endDate">
       <span><i class="fa fa-calendar-alt"></i> End Date:</span>
@@ -240,6 +258,7 @@
     <div class="input-icon">
       <input type="text" id="endDate" name="endDate" required disabled />
     </div>
+    <div class="field-error" id="endDate-error"></div>
 
     <!-- Honeypot field for spam prevention -->
     <label class="honeypot">
@@ -263,5 +282,6 @@
   <script src="date-restrictions.js"></script>
   <script src="booking-submit.js"></script>
   <script src="address-options.js"></script>
+  <script src="form-validation.js"></script>
 </body>
 </html>
