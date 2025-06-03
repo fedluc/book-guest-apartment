@@ -30,14 +30,16 @@ function doPost(e) {
    // Check the booking rules
    const now = new Date();
 
-   // Rule 1: The start date cannot be in the past
-   if (startDate < now) {
-     return ContentService.createTextOutput("The start date cannot be in the past.");
+   // Rule 1: The start date cannot be earlier than one week from now
+   const oneWeekFromToday = new Date();
+   oneWeekFromToday.setMonth(now.getDate() + 7);
+   if (startDate < oneWeekFromToday) {
+     return ContentService.createTextOutput("The start date cannot be in less than one week.");
    }
  
    // Rule 2: The start date must be within three months
    const threeMonthsFromNow = new Date();
-   threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
+   threeMonthsFromNow.setMonth(now.getMonth() + 3);
    if (startDate > threeMonthsFromNow) {
      return ContentService.createTextOutput("The start date must be within three months from today.");
    }
