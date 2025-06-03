@@ -74,6 +74,32 @@
       box-shadow: 0 0 3px var(--primary-color);
     }
 
+    /* Style dropdowns to match inputs */
+    select {
+      width: 100%;
+      padding: 0.75em;
+      margin-top: 0.3em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      box-sizing: border-box;
+      background-color: white;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23888" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.75em center;
+      background-size: 1em;
+    }
+
+    /* Focus styles */
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 3px var(--primary-color);
+    }
+
     /* Style the submit button */
     button {
       background-color: var(--primary-color);
@@ -179,20 +205,24 @@
       <input type="email" id="email" name="email" required />
     </div>
   
-    <!-- Address input field -->
+    <!-- Address dropdown -->
     <label for="address">
       <span><i class="fa fa-home"></i> Address:</span>
     </label>
     <div class="input-icon">
-      <input type="text" id="address" name="address" required />
+      <select id="address" name="address" required>
+        <option value="">Select address</option>
+      </select>
     </div>
-  
-    <!-- Apartment number input field -->
+
+    <!-- Apartment number dropdown -->
     <label for="apartmentNumber">
       <span><i class="fa fa-building"></i> Apartment Number:</span>
     </label>
     <div class="input-icon">
-      <input type="text" id="apartmentNumber" name="apartmentNumber" required />
+      <select id="apartmentNumber" name="apartmentNumber" required disabled>
+        <option value="">Select apartment</option>
+      </select>
     </div>
   
     <!-- Start date input field -->
@@ -232,5 +262,6 @@
   <script src="on-recaptcha-load-callback.js"></script>
   <script src="date-restrictions.js"></script>
   <script src="booking-submit.js"></script>
+  <script src="address-options.js"></script>
 </body>
 </html>
