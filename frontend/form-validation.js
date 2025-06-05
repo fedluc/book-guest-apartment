@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const requiredFields = [
       { id: "name", type: "text" },
       { id: "email", type: "email" },
+      { id: "confirmEmail", type: "email" },
       { id: "address", type: "select" },
       { id: "apartmentNumber", type: "select" },
       { id: "startDate", type: "date" },
@@ -26,6 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!emailPattern.test(value)) {
           message = "Please enter a valid email.";
           isValid = false;
+        }
+        if (field.id === "confirmEmail") {
+          const emailValue = document.getElementById("email").value.trim();
+          if (value !== emailValue) {
+            message = "Email addresses do not match.";
+            isValid = false;
+          }
         }
       }
   
@@ -61,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     requiredFields.forEach(field => {
       const input = document.getElementById(field.id);
       const eventType = field.type === "select" ? "change" : "input";
-  
+
       input.addEventListener(eventType, () => validateField(field));
     });
 
