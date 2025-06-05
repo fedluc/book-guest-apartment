@@ -33,6 +33,7 @@ function doPost(e) {
    // Rule 1: The start date cannot be earlier than one week from now
    const oneWeekFromToday = new Date();
    oneWeekFromToday.setDate(now.getDate() + 7);
+   oneWeekFromToday.setHours(12, 0, 0, 0);
    if (startDate < oneWeekFromToday) {
      return ContentService.createTextOutput("The start date cannot be in less than one week.");
    }
