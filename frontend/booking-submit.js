@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       // Submit booking to the calendar
       try {
-        const scriptUrl = window.ENV.SCRIPT_URL;
+        const scriptUrl = window.ENV.BACKEND_URL;
         const body = new URLSearchParams(formData);
         const response = await fetch(scriptUrl, {
           method: "POST",
