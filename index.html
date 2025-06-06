@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guest Apartment Booking</title>
+  <!-- Font Awesome for icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <link 
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" 
+  />
+  <style>
+    /* Define CSS variables for consistent styling */
+    :root {
+      --primary-color: #2a9d8f;
+      --accent-color: #264653;
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --error-color: #e76f51;
+      --success-color: #2a9d8f;
+      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* General body styling */
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 2rem;
+      margin: auto;
+      max-width: 600px;
+    }
+
+    /* Center and style the heading */
+    h1 {
+      text-align: center;
+      color: var(--accent-color);
+    }
+
+    /* Style the form container */
+    form {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Style labels */
+    label {
+      display: block;
+      margin-top: 1.2em;
+      font-weight: 600;
+    }
+
+    /* Style input fields, textareas, and buttons */
+    input, textarea, button {
+      width: 100%;
+      padding: 0.75em;
+      margin-top: 0.3em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    /* Focus styles for inputs and textareas */
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 3px var(--primary-color);
+    }
+
+    /* Style dropdowns to match inputs */
+    select {
+      width: 100%;
+      padding: 0.75em;
+      margin-top: 0.3em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1em;
+      box-sizing: border-box;
+      background-color: white;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23888" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.75em center;
+      background-size: 1em;
+    }
+
+    /* Focus styles */
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 3px var(--primary-color);
+    }
+
+    /* Style the submit button */
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-top: 1.5em;
+    }
+
+    /* Hover effect for the button */
+    button:hover {
+      background-color: var(--accent-color);
+    }
+
+    /* Style for success and error messages */
+    #message {
+      margin-top: 1.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+    .success {
+      color: var(--success-color);
+    }
+    .error {
+      color: var(--error-color);
+    }
+
+    /* Honeypot field for spam prevention */
+    .honeypot {
+      position: absolute;
+      left: -9999px;
+      height: 0;
+      overflow: hidden;
+    }
+
+    /* Responsive styles for smaller screens */
+    @media (max-width: 500px) {
+      body {
+        padding: 1rem;
+      }
+      form {
+        padding: 1rem;
+      }
+    }
+
+    /* Style for reCAPTCHA container */
+    #recaptcha-container {
+      margin-top: 1.5em;
+      margin-bottom: 1.5em;
+    }
+
+    /* Style for labels with icons */
+    label span {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      font-weight: 600;
+      margin-bottom: 0.3em;
+    }
+
+    /* Style for input fields with icons */
+    .input-icon {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .input-icon i {
+      position: absolute;
+      left: 0.75em;
+      color: #888;
+    }
+    .input-icon input {
+      padding-left: 2em;
+    }
+
+    /* Style for Flatpickr calendar positioning */
+    .flatpickr-calendar {
+      left: auto !important;
+      right: auto !important;
+      transform: none !important;
+      margin: 0 auto;
+    }
+
+    /* Style for error messages displayed below fields */
+    .field-error {
+      color: var(--error-color);
+      font-size: 0.9em;
+      margin-top: 0.25em;
+      display: none;
+    }
+
+    /* Style for invalid input and select fields */
+    input.invalid, select.invalid {
+      border-color: var(--error-color);
+      box-shadow: 0 0 3px var(--error-color);
+    }
+
+  </style>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoadCallback&render=explicit" async defer></script>  
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+  <h1>Book the Guest Apartment</h1>
+  <form id="booking-form" autocomplete="off">
+    <!-- Name input field -->
+    <label for="name">
+      <span><i class="fa fa-user"></i> Name:</span>
+    </label>
+    <div class="input-icon">
+      <input type="text" id="name" name="name" required />
+    </div>
+    <div class="field-error" id="name-error"></div>
+
+    <!-- Email input field -->
+    <label for="email">
+      <span><i class="fa fa-envelope"></i> Email:</span>
+    </label>
+    <div class="input-icon">
+      <input type="email" id="email" name="email" required />
+    </div>
+    <div class="field-error" id="email-error"></div>
+
+    <!-- Email input field -->
+    <label for="email2">
+      <span><i class="fa fa-envelope"></i> Confirm Email:</span>
+    </label>
+    <div class="input-icon">
+      <input type="email" id="confirmEmail" name="confirmEmail" required />
+    </div>
+    <div class="field-error" id="confirmEmail-error"></div>
+
+    <!-- Address dropdown -->
+    <label for="address">
+      <span><i class="fa fa-home"></i> Address:</span>
+    </label>
+    <div class="input-icon">
+      <select id="address" name="address" required>
+        <option value="">Select address</option>
+      </select>
+    </div>
+    <div class="field-error" id="address-error"></div>
+
+    <!-- Apartment number dropdown -->
+    <label for="apartmentNumber">
+      <span><i class="fa fa-building"></i> Apartment Number:</span>
+    </label>
+    <div class="input-icon">
+      <select id="apartmentNumber" name="apartmentNumber" required disabled>
+        <option value="">Select apartment</option>
+      </select>
+    </div>
+    <div class="field-error" id="apartmentNumber-error"></div>
+
+    <!-- Start date input field -->
+    <label for="startDate">
+      <span><i class="fa fa-calendar-alt"></i> Start Date:</span>
+    </label>
+    <div class="input-icon">
+      <input type="text" id="startDate" name="startDate" required />
+    </div>
+    <div class="field-error" id="startDate-error"></div>
+
+    <!-- End date input field (disabled by default) -->
+    <label for="endDate">
+      <span><i class="fa fa-calendar-alt"></i> End Date:</span>
+    </label>
+    <div class="input-icon">
+      <input type="text" id="endDate" name="endDate" required disabled />
+    </div>
+    <div class="field-error" id="endDate-error"></div>
+
+    <!-- Honeypot field for spam prevention -->
+    <label class="honeypot">
+      Leave blank:
+      <input type="text" name="website">
+    </label>
+
+    <!-- reCAPTCHA container -->
+    <div id="recaptcha-container"></div>
+
+    <!-- Submit button -->
+    <button type="submit">Submit Booking</button>
+  </form>
+
+  <!-- Message container for success or error messages -->
+  <div id="message"></div>
+
+  <!-- External JavaScript files -->
+  <script src="env.js"></script>
+  <script src="on-recaptcha-load-callback.js"></script>
+  <script src="date-restrictions.js"></script>
+  <script src="booking-submit.js"></script>
+  <script src="address-options.js"></script>
+  <script src="form-validation.js"></script>
+</body>
+</html>
