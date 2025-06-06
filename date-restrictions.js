@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // ---------------------
 
   try {
-    const response = await fetch(window.ENV.SCRIPT_URL);
+    const response = await fetch(window.ENV.BACKEND_URL);
     if (response.ok) {
       bookings = await response.json(); // array of { start, end }
     }
