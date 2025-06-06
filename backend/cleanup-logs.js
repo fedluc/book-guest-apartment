@@ -5,7 +5,7 @@ function cleanupLogs(days = 30) {
     const now = new Date();
     const threshold = now.getTime() - days * 24 * 60 * 60 * 1000;
     const filtered = data.filter((row, i) => {
-      if (i === 0) return true; // keep header
+      if (i === 0) return true;
       const timestamp = new Date(row[0]);
       return timestamp.getTime() > threshold;
     });

@@ -11,9 +11,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   let bookings = [];
 
+  // ---------------------
+  // Helper functions
+  // ---------------------
+
   function parseDate(dateStr) {
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
   }
 
   function formatISODate(date) {
@@ -25,46 +29,77 @@ document.addEventListener("DOMContentLoaded", async function () {
     return start1 < end2 && start2 < end1;
   }
 
+  // ---------------------
+  // Modular booking logic
+  // ---------------------
+
+  function getBlockedStartDates(bookings, minDate, maxDate) {
+    const blocked = new Set();
+    const cursor = new Date(minDate);
+
+    while (cursor <= maxDate) {
+      const start = new Date(cursor);
+      start.setHours(12, 0, 0, 0);
+      let valid = false;
+
+      for (let d = 1; d <= 4; d++) {
+        const end = new Date(start);
+        end.setDate(end.getDate() + d);
+        if (!bookings.some(b =>
+          isOverlap(start, end, parseDate(b.start), parseDate(b.end))
+        )) {
+          valid = true;
+          break;
+        }
+      }
+
+      if (!valid) blocked.add(formatISODate(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return blocked;
+  }
+
+  function getBlockedEndDates(startDate, bookings) {
+    const blocked = new Set();
+    const start = new Date(startDate);
+    start.setHours(12, 0, 0, 0);
+
+    for (let d = 1; d <= 4; d++) {
+      const end = new Date(start);
+      end.setDate(end.getDate() + d);
+      end.setHours(12, 0, 0, 0);
+
+      const hasConflict = bookings.some(b =>
+        isOverlap(start, end, parseDate(b.start), parseDate(b.end))
+      );
+
+      if (hasConflict) {
+        blocked.add(formatISODate(end));
+      }
+    }
+
+    return blocked;
+  }
+
+  // ---------------------
+  // Fetch bookings
+  // ---------------------
+
   try {
     const response = await fetch(window.ENV.SCRIPT_URL);
     if (response.ok) {
-      bookings = await response.json(); // [{start: ..., end: ...}, ...]
+      bookings = await response.json(); // array of { start, end }
     }
   } catch (err) {
     console.error("Failed to fetch bookings", err);
   }
 
-  const blockedStartDates = new Set();
-  const startDateCursor = new Date(oneWeekFromToday);
+  const blockedStartDates = getBlockedStartDates(bookings, oneWeekFromToday, threeMonthsFromToday);
 
-  while (startDateCursor <= threeMonthsFromToday) {
-    const candidateStart = new Date(startDateCursor);
-    const noonStart = new Date(candidateStart);
-    noonStart.setHours(12, 0, 0, 0);
-
-    let valid = false;
-    for (let duration = 1; duration <= 4; duration++) {
-      const candidateEnd = new Date(noonStart);
-      candidateEnd.setDate(candidateEnd.getDate() + duration);
-
-      const overlap = bookings.some(b => {
-        const bStart = parseDate(b.start);
-        const bEnd = parseDate(b.end);
-        return bStart && bEnd && isOverlap(noonStart, candidateEnd, bStart, bEnd);
-      });
-
-      if (!overlap) {
-        valid = true;
-        break;
-      }
-    }
-
-    if (!valid) {
-      blockedStartDates.add(formatISODate(candidateStart));
-    }
-
-    startDateCursor.setDate(startDateCursor.getDate() + 1);
-  }
+  // ---------------------
+  // Init Start Picker
+  // ---------------------
 
   const startPicker = flatpickr(startInput, {
     dateFormat: "Y-m-d",
@@ -77,60 +112,45 @@ document.addEventListener("DOMContentLoaded", async function () {
         endInput.disabled = true;
         return;
       }
-    
+
       const selectedStart = selectedDates[0];
+      const blockedEndDates = getBlockedEndDates(selectedStart, bookings);
+
       const noonStart = new Date(selectedStart);
-      noonStart.setHours(12, 0, 0, 0); // Start at 12:00 PM
-    
+      noonStart.setHours(12, 0, 0, 0);
       const minEnd = new Date(noonStart);
       minEnd.setDate(minEnd.getDate() + 1);
-    
       const maxEnd = new Date(noonStart);
       maxEnd.setDate(maxEnd.getDate() + 4);
-    
-      const validEndDates = [];
-    
-      for (let d = new Date(minEnd); d <= maxEnd; d.setDate(d.getDate() + 1)) {
-        const noonEnd = new Date(d);
-        noonEnd.setHours(12, 0, 0, 0);
-    
-        // Check if the interval [noonStart, noonEnd) is completely free
-        const overlaps = bookings.some(b => {
-          const bStart = parseDate(b.start);
-          const bEnd = parseDate(b.end);
-          return bStart && bEnd && isOverlap(noonStart, noonEnd, bStart, bEnd);
-        });
-    
-        if (!overlaps) {
-          validEndDates.push(new Date(noonEnd));
-        }
-      }
-    
+
       endInput.disabled = false;
-    
-      // Apply valid end dates only
+
       endInput._flatpickr.set("minDate", minEnd);
       endInput._flatpickr.set("maxDate", maxEnd);
-      endInput._flatpickr.set("disable", [
-        function (date) {
-          return !validEndDates.some(valid => formatISODate(valid) === formatISODate(date));
-        }
-      ]);
-    
-      // Auto-set to first valid date if current selection is invalid
+      endInput._flatpickr.set("disable", [...blockedEndDates]);
+
       const currentEndDate = endInput._flatpickr.selectedDates[0];
-      const isValidSelection = currentEndDate &&
-        validEndDates.some(d => formatISODate(d) === formatISODate(currentEndDate));
-    
-      if (!isValidSelection) {
-        if (validEndDates.length > 0) {
-          endInput._flatpickr.setDate(validEndDates[0], true);
-        } else {
-          endInput._flatpickr.clear();
+      const isValid = currentEndDate &&
+        !blockedEndDates.has(formatISODate(currentEndDate));
+
+      if (!isValid) {
+        const defaultValid = new Date(minEnd);
+        for (let i = 0; i <= 3; i++) {
+          const tryDate = new Date(defaultValid);
+          tryDate.setDate(defaultValid.getDate() + i);
+          if (!blockedEndDates.has(formatISODate(tryDate))) {
+            endInput._flatpickr.setDate(tryDate, true);
+            return;
+          }
         }
+        endInput._flatpickr.clear();
       }
     }
   });
+
+  // ---------------------
+  // Init End Picker (disabled by default)
+  // ---------------------
 
   flatpickr(endInput, {
     dateFormat: "Y-m-d"
