@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     minDate: oneWeekFromToday,
     maxDate: threeMonthsFromToday,
     disable: [...blockedStartDates],
+    disableMobile: true,
     onChange: function (selectedDates) {
       if (selectedDates.length === 0) {
         endInput._flatpickr.clear();
@@ -153,7 +154,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   // ---------------------
 
   flatpickr(endInput, {
-    dateFormat: "Y-m-d"
+    dateFormat: "Y-m-d",
+    disableMobile: true
   });
 
   endInput.disabled = true;
