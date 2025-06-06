@@ -1,92 +1,140 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  // Get references to the start and end date input elements
   const startInput = document.getElementById("startDate");
   const endInput = document.getElementById("endDate");
 
-  // Define date boundaries: today, one week from today, and three months from today
   const today = new Date();
-  const oneWeekFromToday = new Date();
+  const oneWeekFromToday = new Date(today);
   oneWeekFromToday.setDate(today.getDate() + 7);
-  const threeMonthsFromToday = new Date();
+
+  const threeMonthsFromToday = new Date(today);
   threeMonthsFromToday.setMonth(today.getMonth() + 3);
 
-  let disabledDates = [];
+  let bookings = [];
 
-  try {
-    // Fetch disabled dates from the server
-    const response = await fetch(window.ENV.SCRIPT_URL);
-    if (response.ok) {
-      const original = await response.json(); // Example: ['2025-06-01', '2025-06-03', ...]
-      const disabledSet = new Set(original);
-
-      // Extend the disabled dates by adding intermediate "lonely" dates
-      const extended = [...original.map(date => new Date(date))].sort((a, b) => a - b);
-
-      for (let i = 1; i < extended.length; i++) {
-        const prev = extended[i - 1];
-        const next = extended[i];
-        const gap = (next - prev) / (1000 * 60 * 60 * 24); // Calculate the gap in days
-
-        // If the gap is exactly 2 days, add the intermediate date to the disabled set
-        if (gap === 2) {
-          const middle = new Date(prev);
-          middle.setDate(middle.getDate() + 1);
-          const iso = middle.toISOString().split('T')[0];
-          disabledSet.add(iso);
-        }
-      }
-
-      // Convert the set of disabled dates back to a sorted array
-      disabledDates = Array.from(disabledSet).sort();
-    }
-  } catch (err) {
-    // Log an error if fetching disabled dates fails
-    console.error("Failed to fetch disabled dates", err);
+  function parseDate(dateStr) {
+    const parsed = new Date(dateStr);
+    return isNaN(parsed.getTime()) ? null : parsed;
   }
 
-  // Initialize the start date picker
+  function formatISODate(date) {
+    if (!(date instanceof Date) || isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  }
+
+  function isOverlap(start1, end1, start2, end2) {
+    return start1 < end2 && start2 < end1;
+  }
+
+  try {
+    const response = await fetch(window.ENV.SCRIPT_URL);
+    if (response.ok) {
+      bookings = await response.json(); // [{start: ..., end: ...}, ...]
+    }
+  } catch (err) {
+    console.error("Failed to fetch bookings", err);
+  }
+
+  const blockedStartDates = new Set();
+  const startDateCursor = new Date(oneWeekFromToday);
+
+  while (startDateCursor <= threeMonthsFromToday) {
+    const candidateStart = new Date(startDateCursor);
+    const noonStart = new Date(candidateStart);
+    noonStart.setHours(12, 0, 0, 0);
+
+    let valid = false;
+    for (let duration = 1; duration <= 4; duration++) {
+      const candidateEnd = new Date(noonStart);
+      candidateEnd.setDate(candidateEnd.getDate() + duration);
+
+      const overlap = bookings.some(b => {
+        const bStart = parseDate(b.start);
+        const bEnd = parseDate(b.end);
+        return bStart && bEnd && isOverlap(noonStart, candidateEnd, bStart, bEnd);
+      });
+
+      if (!overlap) {
+        valid = true;
+        break;
+      }
+    }
+
+    if (!valid) {
+      blockedStartDates.add(formatISODate(candidateStart));
+    }
+
+    startDateCursor.setDate(startDateCursor.getDate() + 1);
+  }
+
   const startPicker = flatpickr(startInput, {
-    dateFormat: "Y-m-d", // Format for the date picker
-    minDate: oneWeekFromToday, // Minimum selectable date
-    maxDate: threeMonthsFromToday, // Maximum selectable date
-    disable: disabledDates, // Dates to disable
+    dateFormat: "Y-m-d",
+    minDate: oneWeekFromToday,
+    maxDate: threeMonthsFromToday,
+    disable: [...blockedStartDates],
     onChange: function (selectedDates) {
-      // Handle changes to the start date
       if (selectedDates.length === 0) {
-        // Clear and disable the end date picker if no start date is selected
         endInput._flatpickr.clear();
         endInput.disabled = true;
         return;
       }
-
+    
       const selectedStart = selectedDates[0];
-      const minEnd = new Date(selectedStart);
-      minEnd.setDate(minEnd.getDate() + 1); // Minimum end date is one day after the start date
-
-      const maxEnd = new Date(selectedStart);
-      maxEnd.setDate(maxEnd.getDate() + 3); // Maximum end date is three days after the start date
-
-      endInput.disabled = false; // Enable the end date picker
-
-      // Update the end date picker's constraints
+      const noonStart = new Date(selectedStart);
+      noonStart.setHours(12, 0, 0, 0); // Start at 12:00 PM
+    
+      const minEnd = new Date(noonStart);
+      minEnd.setDate(minEnd.getDate() + 1);
+    
+      const maxEnd = new Date(noonStart);
+      maxEnd.setDate(maxEnd.getDate() + 4);
+    
+      const validEndDates = [];
+    
+      for (let d = new Date(minEnd); d <= maxEnd; d.setDate(d.getDate() + 1)) {
+        const noonEnd = new Date(d);
+        noonEnd.setHours(12, 0, 0, 0);
+    
+        // Check if the interval [noonStart, noonEnd) is completely free
+        const overlaps = bookings.some(b => {
+          const bStart = parseDate(b.start);
+          const bEnd = parseDate(b.end);
+          return bStart && bEnd && isOverlap(noonStart, noonEnd, bStart, bEnd);
+        });
+    
+        if (!overlaps) {
+          validEndDates.push(new Date(noonEnd));
+        }
+      }
+    
+      endInput.disabled = false;
+    
+      // Apply valid end dates only
       endInput._flatpickr.set("minDate", minEnd);
       endInput._flatpickr.set("maxDate", maxEnd);
-      endInput._flatpickr.set("disable", disabledDates);
-
-      // Ensure the currently selected end date is within the valid range
+      endInput._flatpickr.set("disable", [
+        function (date) {
+          return !validEndDates.some(valid => formatISODate(valid) === formatISODate(date));
+        }
+      ]);
+    
+      // Auto-set to first valid date if current selection is invalid
       const currentEndDate = endInput._flatpickr.selectedDates[0];
-      if (!currentEndDate || currentEndDate < minEnd || currentEndDate > maxEnd) {
-        endInput._flatpickr.setDate(minEnd, true); // Set the end date to the minimum valid date
+      const isValidSelection = currentEndDate &&
+        validEndDates.some(d => formatISODate(d) === formatISODate(currentEndDate));
+    
+      if (!isValidSelection) {
+        if (validEndDates.length > 0) {
+          endInput._flatpickr.setDate(validEndDates[0], true);
+        } else {
+          endInput._flatpickr.clear();
+        }
       }
     }
   });
 
-  // Initialize the end date picker
   flatpickr(endInput, {
-    dateFormat: "Y-m-d", // Format for the date picker
-    disable: disabledDates // Dates to disable
+    dateFormat: "Y-m-d"
   });
 
-  // Initially disable the end date picker
   endInput.disabled = true;
 });
