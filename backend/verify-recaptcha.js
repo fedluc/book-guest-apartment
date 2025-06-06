@@ -1,5 +1,5 @@
 function verifyRecaptcha(token) {
-    const secretKey = PropertiesService.getScriptProperties().getProperty("RECAPTCHA_SECRET_KEY");
+    const secretKey = getProperty("RECAPTCHA_SECRET_KEY");
     const response = UrlFetchApp.fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "post",
       payload: {
