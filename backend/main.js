@@ -7,7 +7,7 @@ function doPost(e) {
   // Log submission
   logSubmission(e);
   // Handle booking request
-  const message = handleBookingRequest(e.parameter);
+  const message = handleBookingRequest(e);
   // Return log message
   return ContentService.createTextOutput(message);
 }

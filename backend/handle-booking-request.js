@@ -16,9 +16,9 @@ class BookingInfo {
     }
 }
 
-function handleBookingRequest(params) {
+function handleBookingRequest(e) {
     // Extract parameters from the request
-    const info = new BookingInfo(params);
+    const info = new BookingInfo(e.parameter);
     // Validate booking rules and return an error message if validation fails
     const validationError = validateBookingRules(info);
     if (validationError) {
